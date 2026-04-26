@@ -1,0 +1,4 @@
+apps/api/models/**/*.pkl filter=lfs diff=lfs merge=lfs -text
+apps/api/models/**/*.keras filter=lfs diff=lfs merge=lfs -text
+apps/api/models/**/*.json filter=lfs diff=lfs merge=lfs -text
+apps/api/models/**/*.txt filter=lfs diff=lfs merge=lfs -text
