@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 function getScoreColor(score: number) {
   if (score >= 70) return { stroke: "#059669", gradId: "emerald", pill: "bg-emerald-100 text-emerald-700", verdict: "Healthy" };
   if (score >= 45) return { stroke: "#d97706", gradId: "amber",   pill: "bg-amber-100 text-amber-700",   verdict: "Caution" };
-  return             { stroke: "#dc2626", gradId: "red",     pill: "bg-red-100 text-red-700",       verdict: "Risk" };
+  return             { stroke: "#dc2626", gradId: "red",     pill: "bg-red-100 text-red-700",       verdict: "High Risk" };
 }
 
 export function ScoreGauge({ score, label = "Composite Score" }: { score: number; label?: string }) {

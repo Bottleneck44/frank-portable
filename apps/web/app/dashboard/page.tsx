@@ -24,7 +24,7 @@ export default function DashboardPage() {
   const healthyCount = history.filter((h) => h.result.verdict === "Healthy").length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-10 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-12 px-4">
       <div className="max-w-5xl mx-auto space-y-6">
 
         {/* Header */}

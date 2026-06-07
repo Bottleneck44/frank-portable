@@ -133,10 +133,10 @@ export default function ReportPage() {
               <h2 className="font-semibold text-slate-700">Weight Adaptation</h2>
               <p className="text-slate-500">{result.weightAdaptationReason}</p>
               <div className="flex gap-3 text-xs">
-                <span className="bg-violet-100 text-violet-700 px-2.5 py-1 rounded-lg font-semibold">
+                <span className="bg-violet-100 text-violet-700 px-2.5 py-1 rounded-full font-semibold">
                   Fundamental {Math.round(result.adaptedFundamentalWeight * 100)}%
                 </span>
-                <span className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-lg font-semibold">
+                <span className="bg-blue-100 text-blue-700 px-2.5 py-1 rounded-full font-semibold">
                   Technical {Math.round(result.adaptedTechnicalWeight * 100)}%
                 </span>
               </div>

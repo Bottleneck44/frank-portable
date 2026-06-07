@@ -56,10 +56,10 @@ function CategoryAccordion({ categoryScore, rules }: { categoryScore: CategorySc
         className="w-full flex items-center justify-between px-4 py-3.5 bg-white hover:bg-slate-50/80 transition-colors text-left"
       >
         <div className="flex items-center gap-3">
-          <div className="w-1 h-8 rounded-full bg-slate-100 overflow-hidden">
+          <div className="w-1 h-8 rounded-full bg-slate-100 overflow-hidden flex flex-col justify-end">
             <div
               className={`w-full rounded-full ${barColor} transition-all`}
-              style={{ height: `${categoryScore.score}%`, marginTop: `${100 - categoryScore.score}%` }}
+              style={{ height: `${categoryScore.score}%` }}
             />
           </div>
           <span className="font-semibold text-slate-800 text-sm">{CATEGORY_LABELS[categoryScore.category] ?? categoryScore.category}</span>
