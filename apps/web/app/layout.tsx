@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "FinSight — Financial Analysis Platform",
+  title: "FRANK — Financial Ratio Analysis and Knowledge",
   description: "Composite fundamental + ML technical analysis for retail investors. Educational use only.",
 };
 

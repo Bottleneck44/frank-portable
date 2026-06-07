@@ -16,7 +16,7 @@ export default function ArchitecturePage() {
       logging: false,
     });
     const link = document.createElement("a");
-    link.download = "finsight-architecture.png";
+    link.download = "frank-architecture.png";
     link.href = canvas.toDataURL("image/png");
     link.click();
     setExporting(false);
@@ -40,7 +40,7 @@ export default function ArchitecturePage() {
 
         {/* Title */}
         <div className="text-center mb-10">
-          <h1 className="text-3xl font-black tracking-tight text-white mb-2">FinSight — System Architecture</h1>
+          <h1 className="text-3xl font-black tracking-tight text-white mb-2">FRANK — System Architecture</h1>
           <p className="text-slate-400 text-sm">Full-stack stock analysis platform · Next.js + FastAPI + ML Ensemble</p>
         </div>
 

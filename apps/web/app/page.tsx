@@ -173,7 +173,7 @@ function MagneticBtn({ children, className, href, onClick }: {
 function LiveTerminal() {
   const [lines, setLines] = useState<typeof TERMINAL_LINES>([]);
   const [loop, setLoop] = useState(0);
-  const endRef = useRef<HTMLDivElement>(null);
+  const bodyRef = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: false });
 
@@ -188,7 +188,10 @@ function LiveTerminal() {
     return () => { timers.forEach(clearTimeout); clearTimeout(restart); };
   }, [inView, loop]);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [lines]);
+  // Scroll only within the terminal box, never the page
+  useEffect(() => {
+    if (bodyRef.current) bodyRef.current.scrollTop = bodyRef.current.scrollHeight;
+  }, [lines]);
 
   return (
     <div ref={ref}
@@ -202,11 +205,11 @@ function LiveTerminal() {
         </div>
         <div className="flex items-center gap-1.5 ml-3">
           <Terminal className="h-3 w-3 text-slate-500" />
-          <span className="text-[11px] text-slate-500 font-mono">finsight — analysis</span>
+          <span className="text-[11px] text-slate-500 font-mono">frank — analysis</span>
         </div>
       </div>
       {/* Output */}
-      <div className="h-72 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed space-y-0.5 scrollbar-hide">
+      <div ref={bodyRef} className="h-72 overflow-y-auto p-4 font-mono text-[11px] leading-relaxed space-y-0.5">
         <AnimatePresence>
           {lines.map((line, i) => (
             <motion.p key={`${loop}-${i}`}
@@ -223,7 +226,6 @@ function LiveTerminal() {
           transition={{ repeat: Infinity, duration: 1.1 }}
           className="inline-block w-2 h-3 bg-violet-400 align-middle ml-0.5"
         />
-        <div ref={endRef} />
       </div>
     </div>
   );
@@ -287,7 +289,7 @@ export default function HomePage() {
   const [scrolled, setScrolled] = useState(false);
   const [hasFinePointer, setHasFinePointer] = useState(false);
   const [scrambleTrig, setScrambleTrig] = useState(false);
-  const headline = useTextScramble("FinIntelli", scrambleTrig);
+  const headline = useTextScramble("FRANK", scrambleTrig);
 
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress: docScroll } = useScroll();
@@ -334,7 +336,7 @@ export default function HomePage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/20 group-hover:shadow-violet-500/40 transition-shadow">
                 <BarChart2 className="h-4 w-4 text-white" />
               </div>
-              <span className="text-base font-black text-white tracking-tight">FinSight</span>
+              <span className="text-base font-black text-white tracking-tight">FRANK</span>
             </Link>
             <div className="hidden md:flex items-center gap-8">
               {[{ label: "Problem", id: "problem" }, { label: "Approach", id: "approach" },
@@ -846,7 +848,7 @@ export default function HomePage() {
           <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}
             className="space-y-0">
             {[
-              { q: "Is this investment advice?", a: "No. FinSight is strictly educational and for research purposes. Every analysis output includes an explicit disclaimer. Users make their own decisions." },
+              { q: "Is this investment advice?", a: "No. FRANK is strictly educational and for research purposes. Every analysis output includes an explicit disclaimer. Users make their own decisions." },
               { q: "What are the current limitations?", a: "Rule thresholds are calibrated for non-banking companies — banking/NBFC sectors need separate threshold libraries. The 20-company evaluation dataset is diverse but small versus ~5,000 NSE/BSE-listed companies. Heuristic evaluation used experts, not end-users." },
               { q: "What is planned as future work?", a: "Industry-specific rule calibration; controlled user study (N≥30) with comprehension measurement; generative AI for conversational learning; portfolio-level risk; longitudinal validation tracking verdicts against future financial events." },
               { q: "How do DFAL and ML relate?", a: "Independent layers, fused adaptively. DFAL: deterministic, fully explainable rules. ML: 4 pre-trained models on price history. Fusion weights adapt based on data confidence — typically 60% fundamental, 40% technical." },
@@ -893,7 +895,7 @@ export default function HomePage() {
               <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600">
                 <BarChart2 className="h-4 w-4 text-white" />
               </div>
-              <span className="text-base font-black text-white">FinSight</span>
+              <span className="text-base font-black text-white">FRANK</span>
             </Link>
             <div className="flex flex-wrap gap-6 text-sm text-slate-500">
               <Link href="/analyze" className="hover:text-white transition-colors">Analyze</Link>

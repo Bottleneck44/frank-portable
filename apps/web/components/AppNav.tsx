@@ -29,7 +29,7 @@ export function AppNav() {
             >
               <BarChart2 className="h-4 w-4 text-white" />
             </motion.div>
-            <span className="text-lg font-black text-white tracking-tight">FinSight</span>
+            <span className="text-lg font-black text-white tracking-tight">FRANK</span>
           </Link>
 
           <div className="flex items-center gap-1">
