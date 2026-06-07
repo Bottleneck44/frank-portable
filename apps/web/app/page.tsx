@@ -4,15 +4,15 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  BarChart2, ArrowRight, Brain, Shield, TrendingUp, Zap, BookOpen,
-  Search, Menu, X, Sparkles, ChevronDown, ChevronUp, CheckCircle,
-  Clock, Globe, Cpu, Star,
+  BarChart2, ArrowRight, Brain, Shield, BookOpen,
+  Search, Menu, X, ChevronDown, ChevronUp,
+  Cpu, AlertTriangle, Users, FileText, GraduationCap, Layers,
+  Activity, Target, FlaskConical, BarChart3, Zap,
 } from "lucide-react";
 import clsx from "clsx";
 
-const scrollTo = (id: string) => {
+const scrollTo = (id: string) =>
   document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "start" });
-};
 
 export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -24,9 +24,17 @@ export default function HomePage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const NAV_SECTIONS = [
+    { label: "Problem", id: "problem" },
+    { label: "Approach", id: "approach" },
+    { label: "Results", id: "results" },
+    { label: "Demo", id: "demo" },
+  ];
+
   return (
     <div className="min-h-screen bg-white">
-      {/* Nav */}
+
+      {/* ── Sticky Nav ── */}
       <nav className={clsx(
         "fixed top-0 inset-x-0 z-50 transition-all duration-300",
         scrolled ? "bg-slate-900/95 backdrop-blur-lg shadow-lg" : "bg-slate-900"
@@ -34,23 +42,16 @@ export default function HomePage() {
         <div className="mx-auto max-w-6xl px-6">
           <div className="flex h-16 items-center justify-between">
             <Link href="/" className="flex items-center gap-2.5">
-              <motion.div
-                whileHover={{ rotate: 6, scale: 1.05 }}
-                className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/30"
-              >
+              <motion.div whileHover={{ rotate: 6, scale: 1.05 }}
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/30">
                 <BarChart2 className="h-5 w-5 text-white" />
               </motion.div>
               <span className="text-xl font-black text-white tracking-tight">FinSight</span>
             </Link>
 
             <div className="hidden md:flex items-center gap-8">
-              {[
-                { label: "Why?", id: "why" },
-                { label: "Features", id: "features" },
-                { label: "How It Works", id: "how-it-works" },
-                { label: "FAQ", id: "faq" },
-              ].map(({ label, id }) => (
-                <button key={label} onClick={() => scrollTo(id)}
+              {NAV_SECTIONS.map(({ label, id }) => (
+                <button key={id} onClick={() => scrollTo(id)}
                   className="text-sm font-medium text-slate-300 hover:text-white transition-colors">
                   {label}
                 </button>
@@ -59,13 +60,11 @@ export default function HomePage() {
             </div>
 
             <div className="hidden md:flex items-center gap-3">
-              <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">
-                Dashboard
-              </Link>
+              <Link href="/dashboard" className="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white transition-colors">Dashboard</Link>
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Link href="/analyze"
                   className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-violet-500/30 hover:shadow-violet-500/50 transition-all">
-                  Analyze Now <ArrowRight className="h-4 w-4" />
+                  Try Demo <ArrowRight className="h-4 w-4" />
                 </Link>
               </motion.div>
             </div>
@@ -78,15 +77,11 @@ export default function HomePage() {
 
         <AnimatePresence>
           {menuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              className="md:hidden bg-slate-900 border-t border-slate-800"
-            >
+            <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }} className="md:hidden bg-slate-900 border-t border-slate-800">
               <div className="px-6 py-4 space-y-3">
-                {[{ label: "Why?", id: "why" }, { label: "Features", id: "features" }, { label: "How It Works", id: "how-it-works" }, { label: "FAQ", id: "faq" }].map(({ label, id }) => (
-                  <button key={label} onClick={() => { scrollTo(id); setMenuOpen(false); }}
+                {NAV_SECTIONS.map(({ label, id }) => (
+                  <button key={id} onClick={() => { scrollTo(id); setMenuOpen(false); }}
                     className="block w-full py-2 text-left text-slate-300 font-medium">{label}</button>
                 ))}
                 <div className="pt-4 border-t border-slate-800 space-y-3">
@@ -94,7 +89,7 @@ export default function HomePage() {
                   <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="block py-2 text-slate-300">Dashboard</Link>
                   <Link href="/analyze" onClick={() => setMenuOpen(false)}
                     className="block w-full py-3 text-center rounded-xl bg-violet-600 text-white font-semibold">
-                    Analyze Now →
+                    Try Demo →
                   </Link>
                 </div>
               </div>
@@ -103,263 +98,509 @@ export default function HomePage() {
         </AnimatePresence>
       </nav>
 
-      {/* Hero */}
-      <section className="relative bg-gradient-to-b from-white to-slate-50 pt-32 pb-24 overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none opacity-30">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-violet-200 rounded-full blur-3xl" />
-          <div className="absolute top-40 right-20 w-96 h-96 bg-purple-200 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-1/3 w-80 h-80 bg-blue-100 rounded-full blur-3xl" />
+      {/* ── Hero: Project Cover ── */}
+      <section className="relative bg-slate-900 pt-24 pb-20 overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-violet-900/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-purple-900/20 rounded-full blur-3xl" />
+          <div className="absolute inset-0 opacity-5"
+            style={{ backgroundImage: "radial-gradient(circle, #a78bfa 1px, transparent 1px)", backgroundSize: "40px 40px" }} />
         </div>
 
         <div className="relative mx-auto max-w-6xl px-6">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left */}
-            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
-              <motion.div
-                initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 rounded-full bg-violet-100 px-4 py-1.5 text-sm font-medium text-violet-700 mb-6"
-              >
-                <Sparkles className="h-4 w-4" /> Fundamental + ML Technical Analysis
-              </motion.div>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+            className="flex flex-wrap items-center gap-3 mb-10">
+            <span className="inline-flex items-center gap-2 rounded-full bg-violet-600/20 border border-violet-500/30 px-4 py-1.5 text-sm font-semibold text-violet-300">
+              <GraduationCap className="h-4 w-4" /> Final Year Project — 2025–26
+            </span>
+            <span className="inline-flex items-center gap-2 rounded-full bg-slate-800 border border-slate-700 px-4 py-1.5 text-sm font-medium text-slate-300">
+              <FileText className="h-4 w-4" /> Published · IJRTI | ISSN: 2456-3315
+            </span>
+          </motion.div>
 
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-slate-900 leading-[1.1] tracking-tight">
-                Understand stocks,
-                <br />
-                <span className="relative inline-block">
-                  <span className="relative z-10 text-violet-600">not just prices.</span>
-                  <motion.span
-                    initial={{ width: 0 }} animate={{ width: "100%" }}
-                    transition={{ delay: 0.5, duration: 0.6 }}
-                    className="absolute bottom-2 left-0 h-4 bg-violet-200 -z-10"
-                  />
+          <div className="grid lg:grid-cols-2 gap-16 items-start">
+            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white leading-[1.1] tracking-tight">
+                FinIntelli
+                <span className="block text-2xl md:text-3xl font-bold text-violet-400 mt-2 tracking-normal">
+                  A Dual-Layer Financial Intelligence Framework
                 </span>
               </h1>
-
-              <p className="mt-8 text-xl text-slate-600 max-w-lg leading-relaxed">
-                FinSight blends <span className="font-semibold text-slate-800">forensic accounting analysis</span> with
-                machine learning signals into one composite score — and explains every step in plain English.
+              <p className="mt-6 text-lg text-slate-300 leading-relaxed max-w-xl">
+                Integrating Educational Literacy and Deterministic Forensic Analysis for Indian Retail Investors — extended with a 4-model ML Ensemble for NIFTY 50 technical signals.
               </p>
 
-              <div className="mt-10 flex flex-wrap gap-4">
+              <div className="mt-10 grid grid-cols-2 gap-4 text-sm">
+                <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-4">
+                  <p className="text-slate-400 text-xs mb-1 uppercase tracking-wide">Team</p>
+                  <p className="text-white font-semibold leading-relaxed">Ananda D<br />Madhumitha S<br />Kamalika M</p>
+                </div>
+                <div className="bg-slate-800/60 border border-slate-700 rounded-xl p-4">
+                  <p className="text-slate-400 text-xs mb-1 uppercase tracking-wide">Guide</p>
+                  <p className="text-white font-semibold">Dr. P. Vinothiyalakshmi</p>
+                  <p className="text-slate-400 text-xs mt-2">Dept. of AI & Data Science<br />SVCE, Chennai</p>
+                </div>
+              </div>
+
+              <div className="mt-8 flex flex-wrap gap-3">
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <Link href="/analyze"
-                    className="inline-flex items-center gap-3 rounded-full bg-slate-900 px-8 py-4 text-base font-semibold text-white hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20">
-                    Analyze a Company <ArrowRight className="h-5 w-5" />
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-violet-600 to-purple-600 px-7 py-3.5 text-sm font-bold text-white shadow-xl shadow-violet-500/30 hover:shadow-violet-500/50 transition-all">
+                    Launch Live Demo <ArrowRight className="h-4 w-4" />
                   </Link>
                 </motion.div>
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Link href="/learn"
-                    className="inline-flex items-center gap-2 rounded-full border-2 border-slate-200 bg-white px-6 py-4 text-base font-semibold text-slate-700 hover:border-slate-300 hover:bg-slate-50 transition-all">
-                    <BookOpen className="h-4 w-4" /> Learn How It Works
-                  </Link>
-                </motion.div>
-              </div>
-
-              <div className="mt-12 flex items-center gap-6">
-                <div className="flex -space-x-2">
-                  {["A", "B", "C", "D"].map((l) => (
-                    <div key={l} className="w-10 h-10 rounded-full bg-gradient-to-br from-violet-400 to-purple-500 border-2 border-white flex items-center justify-center text-white font-bold text-xs">
-                      {l}
-                    </div>
-                  ))}
-                </div>
-                <div>
-                  <div className="flex items-center gap-1">
-                    {[1, 2, 3, 4, 5].map((i) => <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400" />)}
-                  </div>
-                  <p className="text-sm text-slate-500">Used by 500+ retail investors</p>
-                </div>
+                <button onClick={() => scrollTo("approach")}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-600 px-6 py-3.5 text-sm font-semibold text-slate-300 hover:border-slate-500 hover:text-white transition-all">
+                  View Methodology <ChevronDown className="h-4 w-4" />
+                </button>
               </div>
             </motion.div>
 
-            {/* Right: Score Preview */}
-            <motion.div
-              initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.3 }}
-              className="relative"
-            >
-              <div className="relative rounded-3xl bg-white p-6 shadow-2xl shadow-slate-900/10 border border-slate-100">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-xl font-bold text-white shadow-lg shadow-violet-500/30">
-                      R
-                    </div>
-                    <div>
-                      <p className="font-bold text-slate-900">Reliance Industries</p>
-                      <p className="text-sm text-slate-500">NSE: RELIANCE.NS</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-2xl font-black text-emerald-600">68</p>
-                    <p className="text-xs text-slate-500">Composite</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <AnimatedScoreBar label="Fundamental" score={72} color="violet" delay={0.7} />
-                  <AnimatedScoreBar label="Technical (ML)" score={61} color="blue" delay={0.9} />
-                  <AnimatedScoreBar label="Composite" score={68} color="emerald" delay={1.1} />
-                </div>
-
-                <div className="mt-6 rounded-2xl bg-gradient-to-r from-violet-50 to-purple-50 border border-violet-200 p-4">
-                  <div className="flex items-center gap-2">
-                    <CheckCircle className="h-5 w-5 text-violet-600 shrink-0" />
-                    <div>
-                      <p className="font-semibold text-violet-800 text-sm">28 / 32 rules passed</p>
-                      <p className="text-xs text-violet-600 mt-0.5">All NIFTY 50 ML models available</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.9 }}
-                className="absolute -top-6 -right-6 rounded-2xl bg-gradient-to-br from-violet-600 to-purple-700 px-5 py-4 text-white shadow-xl shadow-violet-500/30"
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <Brain className="h-4 w-4" />
-                  <p className="text-xs font-semibold opacity-90">ML ENSEMBLE</p>
-                </div>
-                <p className="text-2xl font-black">4 Models</p>
-                <p className="text-xs opacity-80">XGBoost · LSTM · RF · LGB</p>
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 1.1 }}
-                className="absolute -bottom-4 -left-4 rounded-xl bg-white px-4 py-3 shadow-xl border border-slate-100"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="h-8 w-8 rounded-lg bg-emerald-100 flex items-center justify-center">
-                    <CheckCircle className="h-4 w-4 text-emerald-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-bold text-slate-900">Healthy</p>
-                    <p className="text-xs text-slate-500">Verdict: Strong</p>
-                  </div>
-                </div>
-              </motion.div>
+            {/* Key metrics grid */}
+            <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.3 }}
+              className="grid grid-cols-2 gap-4">
+              {[
+                { value: "85%", label: "Concordance with Altman Z-Score", color: "violet" },
+                { value: "95%", label: "Within-one-tier concordance", color: "emerald" },
+                { value: "30", label: "Deterministic forensic rules", color: "blue" },
+                { value: "0.72", label: "Heuristic severity (0–4 Nielsen scale)", color: "amber" },
+                { value: "4", label: "ML models — XGBoost · LSTM · RF · LGB", color: "violet" },
+                { value: "<100ms", label: "Analysis latency, 30 rules / 3yr history", color: "emerald" },
+              ].map((m, i) => (
+                <motion.div key={m.label}
+                  initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.4 + i * 0.07 }}
+                  className="bg-slate-800/60 border border-slate-700 rounded-2xl p-4 hover:border-violet-500/40 transition-colors">
+                  <p className={clsx("text-2xl font-black mb-1",
+                    m.color === "violet" ? "text-violet-400" :
+                    m.color === "emerald" ? "text-emerald-400" :
+                    m.color === "blue" ? "text-blue-400" : "text-amber-400"
+                  )}>{m.value}</p>
+                  <p className="text-xs text-slate-400 leading-snug">{m.label}</p>
+                </motion.div>
+              ))}
             </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Stats */}
+      {/* ── Problem Statement ── */}
+      <section id="problem" className="py-24 bg-white scroll-mt-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <p className="text-sm font-bold text-violet-600 uppercase tracking-wider mb-4">| THE PROBLEM</p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight mb-6">
+              The Indian Retail Investor Crisis
+            </h2>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="space-y-6 text-slate-600 leading-relaxed">
+              <p>
+                India&apos;s demat accounts grew from <strong className="text-slate-900">4 crore (2019) to 15+ crore (2024)</strong> — yet SEBI&apos;s 2023 study revealed that <strong className="text-red-600">89% of individual F&O traders incur net losses</strong>, collectively losing <strong className="text-red-600">₹1.8 lakh crore</strong> (~USD 21.6 billion) in a single fiscal year.
+              </p>
+              <p>This is not a technology problem. Trading apps are widely available. It is a <strong className="text-slate-900">dual deficit</strong>:</p>
+              <div className="space-y-3">
+                <div className="flex items-start gap-3 bg-red-50 border border-red-100 rounded-xl p-4">
+                  <AlertTriangle className="h-5 w-5 text-red-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-red-800">Literacy Deficit</p>
+                    <p className="text-sm text-red-600 mt-0.5">Retail investors lack the cognitive frameworks to interpret financial statements, balance sheets, and accounting signals.</p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3 bg-amber-50 border border-amber-100 rounded-xl p-4">
+                  <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-semibold text-amber-800">Tooling Deficit</p>
+                    <p className="text-sm text-amber-600 mt-0.5">No accessible tool systematically analyzes company health using forensic accounting methods and explains every step in plain English.</p>
+                  </div>
+                </div>
+              </div>
+              <p>Existing platforms separate education from analysis, forcing context-switching — and use opaque methodologies that reduce investor trust.</p>
+            </motion.div>
+
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}
+              className="space-y-4">
+              {[
+                { stat: "15 Cr+", desc: "Demat accounts as of 2024 (up 4× since 2019)", color: "violet" },
+                { stat: "89%", desc: "F&O traders with net losses — SEBI 2023 study", color: "red" },
+                { stat: "₹1.8L Cr", desc: "Aggregate retail losses in a single fiscal year", color: "red" },
+                { stat: "0", desc: "Accessible forensic analysis tools for Indian retail investors", color: "amber" },
+              ].map((s, i) => (
+                <motion.div key={s.stat} initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                  className="flex items-center gap-5 bg-slate-50 border border-slate-200 rounded-2xl p-5">
+                  <p className={clsx("text-3xl font-black shrink-0 w-28",
+                    s.color === "violet" ? "text-violet-600" :
+                    s.color === "red" ? "text-red-600" : "text-amber-600"
+                  )}>{s.stat}</p>
+                  <p className="text-sm text-slate-600 leading-snug">{s.desc}</p>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Research Contributions ── */}
       <section className="py-20 bg-slate-900">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <StatItem value="32+" label="Forensic Rules" sublabel="Industry-standard" />
-            <StatItem value="4" label="ML Models" sublabel="XGBoost · LSTM · RF · LGB" />
-            <StatItem value="50" label="NIFTY Stocks" sublabel="Full ML coverage" />
-            <StatItem value="<5s" label="Analysis Time" sublabel="Real-time results" />
-          </div>
-        </div>
-      </section>
-
-      {/* Why */}
-      <section id="why" className="py-24 scroll-mt-20">
-        <div className="mx-auto max-w-6xl px-6 text-center">
-          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <p className="text-sm font-bold text-violet-600 uppercase tracking-wider mb-4">| WHY FINSIGHT?</p>
-            <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight">
-              Understand a company&apos;s
-              <br />
-              <span className="text-violet-600">financial health in minutes</span>
-            </h2>
-            <p className="mt-6 text-xl text-slate-600 max-w-2xl mx-auto">
-              Stop drowning in spreadsheets. FinSight automates the forensic analysis that analysts do manually — and explains every number.
-            </p>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="text-center mb-14">
+            <p className="text-sm font-bold text-violet-400 uppercase tracking-wider mb-4">| RESEARCH CONTRIBUTIONS</p>
+            <h2 className="text-4xl font-black text-white">Four core contributions</h2>
           </motion.div>
-          <div className="mt-16 grid md:grid-cols-3 gap-6">
-            <ValueCard icon={<Clock className="h-6 w-6" />} title="Save 10+ Hours"
-              description="What takes analysts hours, FinSight does in seconds. Instant scoring across 32 accounting rules." />
-            <ValueCard icon={<Brain className="h-6 w-6" />} title="ML-Powered Signals"
-              description="4 models trained on 2012–2024 NIFTY 50 data deliver a technical ensemble score alongside fundamentals." />
-            <ValueCard icon={<Globe className="h-6 w-6" />} title="Plain-English Explanations"
-              description="Every score, flag, and weight is explained so you understand — not just see — the analysis." />
-          </div>
-        </div>
-      </section>
-
-      {/* Features */}
-      <section id="features" className="py-24 bg-slate-900 scroll-mt-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="text-center mb-16">
-            <p className="text-sm font-bold text-violet-400 uppercase tracking-wider mb-4">| FEATURES</p>
-            <h2 className="text-4xl md:text-5xl font-black text-white">Everything under the hood</h2>
-          </div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <FeatureCard icon={<BarChart2 className="h-6 w-6" />} title="32 Forensic Rules"
-              description="Profitability, liquidity, solvency, efficiency, earnings quality, cash flow — every dimension scored." />
-            <FeatureCard icon={<Brain className="h-6 w-6" />} title="4 ML Models"
-              description="XGBoost, LightGBM, Random Forest, LSTM ensemble trained on NIFTY 50 price history." />
-            <FeatureCard icon={<Zap className="h-6 w-6" />} title="Composite Score"
-              description="Fundamental + technical fused with adaptive weights. One number, full transparency." />
-            <FeatureCard icon={<BookOpen className="h-6 w-6" />} title="Learn As You Go"
-              description="Every rule comes with a plain-English explanation. No jargon left unexplained." />
-            <FeatureCard icon={<Shield className="h-6 w-6" />} title="Risk Overrides"
-              description="Hard caps for negative equity, Altman Z &lt; 1.81, and other critical conditions." />
-            <FeatureCard icon={<TrendingUp className="h-6 w-6" />} title="Edge Case Handling"
-              description="IPOs, penny stocks, missing data — detected and disclosed, never silently broken." />
-          </div>
-          <div className="mt-12 text-center">
-            <Link href="/analyze" className="inline-flex items-center gap-2 text-violet-400 font-semibold hover:text-violet-300 transition-colors">
-              Start analyzing now <ArrowRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* How It Works */}
-      <section id="how-it-works" className="py-24 bg-slate-50 scroll-mt-20">
-        <div className="mx-auto max-w-6xl px-6">
-          <p className="text-sm font-bold text-violet-600 uppercase tracking-wider mb-4">| HOW IT WORKS</p>
-          <h2 className="text-4xl md:text-5xl font-black text-slate-900 mb-16">Four simple steps</h2>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-2 gap-5">
             {[
-              { n: "01", icon: <Search className="h-5 w-5" />, title: "Input", desc: "Paste a NIFTY 50 ticker or upload financial statements as JSON." },
-              { n: "02", icon: <Cpu className="h-5 w-5" />, title: "Analyze", desc: "32 accounting rules + 4 ML models run in parallel." },
-              { n: "03", icon: <BarChart2 className="h-5 w-5" />, title: "Understand", desc: "Every score, flag, and weight explained in plain English." },
-              { n: "04", icon: <CheckCircle className="h-5 w-5" />, title: "Decide", desc: "You decide — we never tell you what to buy." },
-            ].map((step, i) => (
-              <motion.div key={step.n}
-                initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+              { id: "C1", icon: <Cpu className="h-5 w-5" />, title: "Web Platform", body: "Real-time forensic analysis for any listed company using live Yahoo Finance data. Sub-100ms latency for 30 rules across 3-year financial histories." },
+              { id: "C2", icon: <Shield className="h-5 w-5" />, title: "Forensic Engine (DFAL)", body: "30 deterministic rules across 7 analytical categories with a severity-weighted verdict algorithm. Validated against Altman Z-Score across 20 Indian companies." },
+              { id: "C3", icon: <BookOpen className="h-5 w-5" />, title: "Progressive Disclosure (ELL)", body: "Three-level educational model (L1: inline → L2: contextual → L3: deep-dive) grounded in cognitive load theory. Mean heuristic severity 0.72/4.0." },
+              { id: "C4", icon: <FlaskConical className="h-5 w-5" />, title: "Multi-dimensional Evaluation", body: "Concordance analysis, 5 retrospective case studies (distressed firms with 12+ months advance signaling), expert heuristic evaluation, and performance benchmarking." },
+            ].map((c, i) => (
+              <motion.div key={c.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="flex flex-col gap-4 rounded-2xl bg-white border border-slate-200 p-6 hover:border-violet-200 hover:shadow-xl transition-all">
-                <div className="flex items-center gap-3">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-violet-600 text-white">
-                    {step.icon}
+                className="bg-slate-800 border border-slate-700 rounded-2xl p-6 hover:border-violet-500/40 transition-colors group">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-violet-600/20 text-violet-400 group-hover:bg-violet-600/30 transition-colors">
+                    {c.icon}
                   </div>
-                  <span className="text-xs font-black text-violet-600">{step.n}</span>
+                  <span className="text-xs font-black text-violet-400 tracking-wider">{c.id}</span>
+                  <h3 className="font-bold text-white">{c.title}</h3>
                 </div>
-                <h3 className="text-lg font-bold text-slate-900">{step.title}</h3>
-                <p className="text-sm text-slate-600">{step.desc}</p>
+                <p className="text-slate-400 text-sm leading-relaxed">{c.body}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="py-24 scroll-mt-20">
+      {/* ── Methodology / Architecture ── */}
+      <section id="approach" className="py-24 bg-slate-50 scroll-mt-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-16">
+            <p className="text-sm font-bold text-violet-600 uppercase tracking-wider mb-4">| METHODOLOGY</p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight">
+              Dual-layer architecture +<br />
+              <span className="text-violet-600">ML ensemble</span>
+            </h2>
+            <p className="mt-6 text-xl text-slate-600 max-w-2xl">
+              FinSight is the full-stack implementation of FinIntelli — adding a 4-model ML ensemble on top of the DFAL + ELL layers.
+            </p>
+          </motion.div>
+
+          {/* Pipeline */}
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="bg-white border border-slate-200 rounded-3xl p-8 mb-10 shadow-sm">
+            <h3 className="text-base font-bold text-slate-700 mb-6 flex items-center gap-2">
+              <Layers className="h-5 w-5 text-violet-500" /> Analysis Pipeline
+            </h3>
+            <div className="flex flex-col md:flex-row items-stretch gap-2">
+              {[
+                { label: "Input", sub: "Ticker / JSON / Manual", border: "border-slate-200" },
+                { label: "Market Data", sub: "Yahoo Finance (live)", border: "border-blue-200", text: "text-blue-700", bg: "bg-blue-50" },
+                { label: "Forensic Rules (DFAL)", sub: "30 rules · 7 categories", border: "border-violet-200", text: "text-violet-700", bg: "bg-violet-50" },
+                { label: "ML Ensemble", sub: "XGBoost · LSTM · RF · LGB", border: "border-purple-200", text: "text-purple-700", bg: "bg-purple-50" },
+                { label: "Fusion Engine", sub: "Adaptive weight blending", border: "border-indigo-200", text: "text-indigo-700", bg: "bg-indigo-50" },
+                { label: "Verdict + ELL", sub: "Score · Flags · Education", border: "border-emerald-200", text: "text-emerald-700", bg: "bg-emerald-50" },
+              ].map((step, i) => (
+                <div key={step.label} className="flex items-center gap-2 flex-1">
+                  <div className={clsx("flex-1 rounded-xl p-3 border text-center", step.bg ?? "bg-slate-100", step.border)}>
+                    <p className={clsx("text-xs font-bold", step.text ?? "text-slate-700")}>{step.label}</p>
+                    <p className="text-xs text-slate-500 mt-0.5">{step.sub}</p>
+                  </div>
+                  {i < 5 && <ArrowRight className="h-4 w-4 text-slate-300 shrink-0 hidden md:block" />}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Layer details */}
+          <div className="grid md:grid-cols-3 gap-6">
+            {[
+              {
+                icon: <Shield className="h-5 w-5 text-violet-600" />, bg: "bg-violet-100", border: "border-violet-200",
+                title: "DFAL — Forensic Rules", accent: "text-violet-400",
+                points: [
+                  "30 deterministic rules; pure functions (no ML)",
+                  "7 categories: Profitability, Liquidity, Solvency, Efficiency, Earnings Quality, Cash Flow, Growth",
+                  "Severity-weighted verdict: Healthy / Caution / High Risk",
+                  "Hard overrides: negative equity, Altman Z < 1.81",
+                ],
+              },
+              {
+                icon: <Brain className="h-5 w-5 text-purple-600" />, bg: "bg-purple-100", border: "border-purple-200",
+                title: "ML Ensemble — Technical", accent: "text-purple-400",
+                points: [
+                  "4 models: XGBoost, LightGBM, Random Forest, LSTM",
+                  "Trained on 2012–2024 NIFTY 50 price history",
+                  "21-feature matrix from technical indicators",
+                  "R²-weighted ensemble → Technical Score 0–100",
+                ],
+              },
+              {
+                icon: <BookOpen className="h-5 w-5 text-blue-600" />, bg: "bg-blue-100", border: "border-blue-200",
+                title: "ELL — Progressive Disclosure", accent: "text-blue-400",
+                points: [
+                  "L1: Inline explanations on every metric",
+                  "L2: Contextual deep-dives per rule",
+                  "L3: Glossary & topic articles (/learn)",
+                  "Grounded in cognitive load theory + Nielsen heuristics",
+                ],
+              },
+            ].map((layer, i) => (
+              <motion.div key={layer.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                className={clsx("bg-white border rounded-2xl p-6 shadow-sm", layer.border)}>
+                <div className={clsx("flex h-10 w-10 items-center justify-center rounded-xl mb-4", layer.bg)}>
+                  {layer.icon}
+                </div>
+                <h3 className="font-bold text-slate-900 mb-3">{layer.title}</h3>
+                <ul className="text-sm text-slate-600 space-y-1.5 leading-relaxed">
+                  {layer.points.map((p) => (
+                    <li key={p} className="flex gap-2">
+                      <span className={clsx("font-bold shrink-0", layer.accent)}>·</span> {p}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Live Demo Features ── */}
+      <section id="demo" className="py-24 bg-slate-900 scroll-mt-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="text-center mb-16">
+            <p className="text-sm font-bold text-violet-400 uppercase tracking-wider mb-4">| LIVE DEMO</p>
+            <h2 className="text-4xl md:text-5xl font-black text-white">Explore each feature</h2>
+            <p className="mt-4 text-slate-400 text-lg">Every button below opens the real, working application.</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-6">
+            {[
+              {
+                icon: <Search className="h-6 w-6" />, title: "Stock Ticker Analysis",
+                desc: "Enter any NIFTY 50 ticker and get a full forensic + ML report in under 5 seconds. Try RELIANCE.NS, TCS.NS, or HDFCBANK.NS.",
+                cta: "Run Analysis", href: "/analyze", badge: "Core Feature", badgeColor: "violet",
+              },
+              {
+                icon: <BarChart3 className="h-6 w-6" />, title: "Composite Score Report",
+                desc: "Full report: Verdict header, category radar, ML predictions, red flag table, and progressive disclosure breakdowns. Every score explained.",
+                cta: "View Sample Report", href: "/analyze", badge: "DFAL + ELL", badgeColor: "purple",
+              },
+              {
+                icon: <Brain className="h-6 w-6" />, title: "ML Ensemble Predictions",
+                desc: "4 pre-trained models produce individual predictions; R²-weighted ensemble gives a Technical Score 0–100 with directional consensus.",
+                cta: "See ML in Action", href: "/analyze", badge: "Technical Layer", badgeColor: "blue",
+              },
+              {
+                icon: <BookOpen className="h-6 w-6" />, title: "Educational Glossary",
+                desc: "Three-level progressive disclosure — every financial term and rule explained in plain English. The Learn → Understand → Validate pipeline.",
+                cta: "Open Learn Module", href: "/learn", badge: "ELL · L1–L3", badgeColor: "emerald",
+              },
+              {
+                icon: <Activity className="h-6 w-6" />, title: "Session Dashboard",
+                desc: "Compare multiple stocks side-by-side. Fundamental vs Technical scatter plot. Session history preserved in browser storage.",
+                cta: "Open Dashboard", href: "/dashboard", badge: "Dashboard", badgeColor: "amber",
+              },
+              {
+                icon: <Shield className="h-6 w-6" />, title: "Edge Case Handling",
+                desc: "IPO stocks, penny stocks, missing data, stale financials — every anomaly detected, disclosed, and mitigated. Never silently broken.",
+                cta: "Try with JSON Data", href: "/analyze", badge: "Reliability", badgeColor: "violet",
+              },
+            ].map((f, i) => (
+              <motion.div key={f.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                className="bg-slate-800 border border-slate-700 rounded-2xl p-6 hover:border-violet-500/50 transition-all group flex flex-col">
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600/20 text-violet-400 group-hover:bg-violet-600/30 transition-colors">
+                    {f.icon}
+                  </div>
+                  <span className={clsx("text-xs font-bold px-2.5 py-1 rounded-full border",
+                    f.badgeColor === "violet" ? "bg-violet-900/30 text-violet-300 border-violet-700/50" :
+                    f.badgeColor === "purple" ? "bg-purple-900/30 text-purple-300 border-purple-700/50" :
+                    f.badgeColor === "blue" ? "bg-blue-900/30 text-blue-300 border-blue-700/50" :
+                    f.badgeColor === "emerald" ? "bg-emerald-900/30 text-emerald-300 border-emerald-700/50" :
+                    "bg-amber-900/30 text-amber-300 border-amber-700/50"
+                  )}>{f.badge}</span>
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">{f.title}</h3>
+                <p className="text-slate-400 text-sm leading-relaxed flex-1 mb-5">{f.desc}</p>
+                <Link href={f.href}
+                  className="inline-flex items-center gap-2 text-sm font-semibold text-violet-400 hover:text-violet-300 transition-colors group/link">
+                  {f.cta} <ArrowRight className="h-4 w-4 group-hover/link:translate-x-1 transition-transform" />
+                </Link>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Results ── */}
+      <section id="results" className="py-24 bg-white scroll-mt-20">
+        <div className="mx-auto max-w-6xl px-6">
+          <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mb-16">
+            <p className="text-sm font-bold text-violet-600 uppercase tracking-wider mb-4">| EVALUATION & RESULTS</p>
+            <h2 className="text-4xl md:text-5xl font-black text-slate-900 leading-tight">Multi-dimensional validation</h2>
+            <p className="mt-6 text-xl text-slate-600 max-w-2xl">
+              Evaluated across 20 Indian listed companies spanning 7 sectors, with 4 complementary validation dimensions.
+            </p>
+          </motion.div>
+
+          <div className="grid lg:grid-cols-2 gap-8">
+            {/* Concordance */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="bg-slate-50 border border-slate-200 rounded-2xl p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-violet-100">
+                  <Target className="h-5 w-5 text-violet-600" />
+                </div>
+                <h3 className="font-bold text-slate-900">Analytical Validity</h3>
+              </div>
+              <div className="space-y-4">
+                <ResultBar label="Exact concordance with Altman Z-Score" value={85} color="violet" />
+                <ResultBar label="Within-one-tier concordance" value={95} color="emerald" />
+                <ResultBar label="Case studies correctly classified (5/5)" value={100} color="blue" />
+              </div>
+              <p className="mt-5 text-xs text-slate-500 leading-relaxed">
+                20 companies: Technology (4), Banking (4), Oil & Gas (2), FMCG (4), Pharma (3), Auto (3). Banking divergences are intentional — D/E threshold tuned for non-banking sectors.
+              </p>
+            </motion.div>
+
+            {/* Case Studies */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="bg-slate-50 border border-slate-200 rounded-2xl p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-emerald-100">
+                  <FlaskConical className="h-5 w-5 text-emerald-600" />
+                </div>
+                <h3 className="font-bold text-slate-900">Retrospective Case Studies</h3>
+              </div>
+              <div className="space-y-3">
+                {[
+                  { company: "HUL", verdict: "Healthy", detail: "29/30 rules passed · AAA credit aligned · ROE 75%+", color: "emerald" },
+                  { company: "TCS", verdict: "Healthy", detail: "Cash-rich, zero D/E, consistent profitability", color: "emerald" },
+                  { company: "Yes Bank (pre-crisis)", verdict: "High Risk", detail: "Flagged 12+ months before collapse · Altman Z critical", color: "red" },
+                  { company: "Jet Airways", verdict: "High Risk", detail: "Negative equity & persistent OCF losses — correctly flagged", color: "red" },
+                  { company: "Tata Motors (FY19)", verdict: "Caution", detail: "JLR losses, elevated leverage — Caution correctly assigned", color: "amber" },
+                ].map((cs) => (
+                  <div key={cs.company} className="flex items-start gap-3 bg-white border border-slate-200 rounded-xl p-3.5">
+                    <span className={clsx("text-xs font-bold px-2 py-0.5 rounded-full shrink-0 mt-0.5",
+                      cs.color === "emerald" ? "bg-emerald-100 text-emerald-700" :
+                      cs.color === "red" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
+                    )}>{cs.verdict}</span>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">{cs.company}</p>
+                      <p className="text-xs text-slate-500 mt-0.5">{cs.detail}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Heuristic */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+              className="bg-slate-50 border border-slate-200 rounded-2xl p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-blue-100">
+                  <Users className="h-5 w-5 text-blue-600" />
+                </div>
+                <h3 className="font-bold text-slate-900">Interface — Heuristic Evaluation</h3>
+              </div>
+              <div className="flex items-center gap-6 mb-5">
+                <div className="text-center shrink-0">
+                  <p className="text-5xl font-black text-violet-600">0.72</p>
+                  <p className="text-xs text-slate-500 mt-1">Mean severity<br />(0–4 Nielsen scale)</p>
+                </div>
+                <div className="text-sm text-slate-600 space-y-2 leading-relaxed">
+                  <p>Evaluated using <strong>Nielsen&apos;s 10 Usability Heuristics</strong> by 3 expert evaluators with dual UX + finance expertise.</p>
+                  <p>Lowest severity on <strong>H3 (user control)</strong> and <strong>H6 (recognition)</strong> — the most relevant heuristics for information architecture.</p>
+                </div>
+              </div>
+              <div className="bg-violet-50 border border-violet-100 rounded-xl p-3.5 text-xs text-violet-700">
+                <strong>Key finding:</strong> Progressive disclosure effectively manages financial information complexity without overwhelming non-expert users.
+              </div>
+            </motion.div>
+
+            {/* Performance */}
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.1 }}
+              className="bg-slate-50 border border-slate-200 rounded-2xl p-7">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100">
+                  <Zap className="h-5 w-5 text-amber-600" />
+                </div>
+                <h3 className="font-bold text-slate-900">System Performance</h3>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { value: "<100ms", label: "Forensic analysis latency (30 rules · 3yr history)" },
+                  { value: "<5s", label: "Full pipeline including ML inference" },
+                  { value: "30", label: "Deterministic rules run in parallel" },
+                  { value: "49", label: "NIFTY 50 stocks with full ML support" },
+                ].map((p) => (
+                  <div key={p.label} className="bg-white border border-slate-200 rounded-xl p-4">
+                    <p className="text-2xl font-black text-slate-900 mb-1">{p.value}</p>
+                    <p className="text-xs text-slate-500 leading-snug">{p.label}</p>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Tech Stack ── */}
+      <section className="py-20 bg-slate-900">
+        <div className="mx-auto max-w-6xl px-6">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+            className="text-center mb-12">
+            <p className="text-sm font-bold text-violet-400 uppercase tracking-wider mb-4">| TECHNOLOGY STACK</p>
+            <h2 className="text-3xl font-black text-white">Built with</h2>
+          </motion.div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              { layer: "Frontend", items: ["Next.js 16", "React 19", "TypeScript 5", "Tailwind CSS 4", "Framer Motion 12", "Recharts 3"] },
+              { layer: "Rules Engine", items: ["Pure TypeScript", "30 forensic rules", "Zod validation", "Zustand state", "Zero server deps"] },
+              { layer: "ML Backend", items: ["FastAPI + Pydantic v2", "XGBoost", "LightGBM", "Random Forest", "TensorFlow LSTM", "Python 3.11"] },
+              { layer: "Data", items: ["yahoo-finance2 (Node)", "yfinance (Python)", "21 engineered features", "pandas 2 + numpy"] },
+            ].map((group, i) => (
+              <motion.div key={group.layer} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.08 }}
+                className="bg-slate-800 border border-slate-700 rounded-2xl p-5">
+                <p className="text-xs font-bold text-violet-400 uppercase tracking-wider mb-3">{group.layer}</p>
+                <ul className="space-y-1.5">
+                  {group.items.map((item) => (
+                    <li key={item} className="flex items-center gap-2 text-sm text-slate-300">
+                      <span className="h-1.5 w-1.5 rounded-full bg-violet-500 shrink-0" /> {item}
+                    </li>
+                  ))}
+                </ul>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Limitations & Future Work ── */}
+      <section className="py-24 bg-white">
         <div className="mx-auto max-w-4xl px-6">
-          <p className="text-sm font-bold text-violet-600 uppercase tracking-wider mb-4">| FAQ</p>
-          <h2 className="text-4xl font-black text-slate-900 mb-12">Common questions</h2>
+          <p className="text-sm font-bold text-violet-600 uppercase tracking-wider mb-4">| LIMITATIONS & FUTURE WORK</p>
+          <h2 className="text-4xl font-black text-slate-900 mb-12">Honest acknowledgements</h2>
           <div className="space-y-4">
             {[
-              { q: "Is this investment advice?", a: "No. FinSight is strictly educational. It shows forensic accounting signals and ML predictions. You make the final decision — always consult a qualified financial advisor." },
-              { q: "Which stocks support full ML analysis?", a: "All 50 NIFTY 50 stocks have pre-trained models. Any ticker can run fundamental-only analysis using live Yahoo Finance data." },
-              { q: "Can I upload my own financial data?", a: "Yes — paste JSON in the format { years: [...] } or type a ticker. Manual entry form is coming soon." },
-              { q: "How are the ML models trained?", a: "XGBoost, LightGBM, Random Forest, and LSTM are trained on 2012–2024 NIFTY 50 price and technical indicator history. Predictions are R²-weighted into an ensemble." },
-              { q: "What does the Composite Score mean?", a: "It blends the Fundamental Score and Technical Score using adaptive weights — typically 60/40, but adjusted if data confidence is low or strong trends exist." },
-              { q: "Is my data stored?", a: "No. Analyses run in-memory during your session and are cleared when you close the browser tab. Nothing is persisted server-side." },
+              { q: "Is this investment advice?", a: "No. FinSight is strictly educational and for research purposes. It surfaces forensic accounting signals and ML predictions. All analysis outputs include explicit disclaimers. Users make their own decisions." },
+              { q: "What are the current limitations?", a: "Rule thresholds are calibrated for non-banking companies — banking and NBFC sectors need separate threshold libraries. The 20-company evaluation dataset is diverse but represents a small fraction of ~5,000 NSE/BSE-listed companies. The heuristic evaluation used expert evaluators, not end-users." },
+              { q: "What is planned as future work?", a: "Industry-specific rule calibration for banking/NBFCs; controlled user study (N≥30) with pre/post comprehension measurement; generative AI integration for conversational learning; portfolio-level risk assessment; longitudinal validation tracking verdicts against future financial events." },
+              { q: "How does the ML layer relate to the DFAL?", a: "They are independent layers fused by the adaptive Fusion Engine. The DFAL runs deterministic forensic rules (explainable, rule-based). The ML layer runs 4 pre-trained models on technical price indicators. Fusion weights adapt based on data confidence — typically 60% fundamental, 40% technical." },
             ].map((faq) => <FAQItem key={faq.q} question={faq.q} answer={faq.a} />)}
           </div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* ── CTA ── */}
       <section className="py-24 bg-gradient-to-br from-violet-600 to-purple-700 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl" />
@@ -367,21 +608,30 @@ export default function HomePage() {
         </div>
         <div className="relative mx-auto max-w-3xl px-6 text-center">
           <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Ready to analyze your first stock?</h2>
+            <h2 className="text-4xl md:text-5xl font-black text-white mb-6">Try the live demo</h2>
             <p className="text-xl text-violet-100 mb-10">
-              Supports all NIFTY 50 stocks with full ML analysis. Any ticker works for fundamental-only mode.
+              Analyze any NIFTY 50 stock with full forensic + ML analysis.<br />
+              All 49 tickers supported. Results in under 5 seconds.
             </p>
-            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Link href="/analyze"
-                className="inline-flex items-center gap-3 rounded-full bg-white px-10 py-5 text-lg font-bold text-violet-700 hover:bg-slate-50 transition-all shadow-2xl">
-                Get Started Free <ArrowRight className="h-5 w-5" />
-              </Link>
-            </motion.div>
+            <div className="flex flex-wrap gap-4 justify-center">
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link href="/analyze"
+                  className="inline-flex items-center gap-3 rounded-full bg-white px-10 py-5 text-lg font-bold text-violet-700 hover:bg-slate-50 transition-all shadow-2xl">
+                  Analyze a Stock <ArrowRight className="h-5 w-5" />
+                </Link>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Link href="/learn"
+                  className="inline-flex items-center gap-2 rounded-full border-2 border-white/30 bg-white/10 px-8 py-5 text-lg font-bold text-white hover:bg-white/20 transition-all">
+                  <BookOpen className="h-5 w-5" /> Learn Module
+                </Link>
+              </motion.div>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ── Footer ── */}
       <footer className="bg-slate-950 py-16">
         <div className="mx-auto max-w-6xl px-6">
           <div className="grid md:grid-cols-4 gap-12">
@@ -392,36 +642,40 @@ export default function HomePage() {
                 </div>
                 <span className="text-xl font-black text-white">FinSight</span>
               </Link>
-              <p className="text-slate-400 text-sm">Forensic + ML financial analysis for retail investors.</p>
+              <p className="text-slate-400 text-sm mb-3">FinIntelli implementation — final year project.</p>
+              <p className="text-slate-500 text-xs">Dept. of AI & Data Science<br />SVCE, Chennai · 2025–26</p>
             </div>
             <div>
-              <h4 className="font-semibold text-white mb-4">Product</h4>
+              <h4 className="font-semibold text-white mb-4">Application</h4>
               <ul className="space-y-2 text-sm text-slate-400">
                 <li><Link href="/analyze" className="hover:text-white transition-colors">Analyze</Link></li>
                 <li><Link href="/dashboard" className="hover:text-white transition-colors">Dashboard</Link></li>
                 <li><Link href="/learn" className="hover:text-white transition-colors">Learn</Link></li>
+                <li><Link href="/architecture" className="hover:text-white transition-colors">Architecture</Link></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-white mb-4">Analysis</h4>
+              <h4 className="font-semibold text-white mb-4">Research</h4>
               <ul className="space-y-2 text-sm text-slate-400">
-                <li><button onClick={() => scrollTo("features")} className="hover:text-white transition-colors">Features</button></li>
-                <li><button onClick={() => scrollTo("how-it-works")} className="hover:text-white transition-colors">How It Works</button></li>
-                <li><button onClick={() => scrollTo("faq")} className="hover:text-white transition-colors">FAQ</button></li>
+                <li><button onClick={() => scrollTo("problem")} className="hover:text-white transition-colors">Problem Statement</button></li>
+                <li><button onClick={() => scrollTo("approach")} className="hover:text-white transition-colors">Methodology</button></li>
+                <li><button onClick={() => scrollTo("results")} className="hover:text-white transition-colors">Results</button></li>
+                <li><button onClick={() => scrollTo("demo")} className="hover:text-white transition-colors">Live Demo</button></li>
               </ul>
             </div>
             <div>
-              <h4 className="font-semibold text-white mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm text-slate-500">
-                <li>Not SEBI registered.</li>
-                <li>Educational use only.</li>
-                <li>Not investment advice.</li>
+              <h4 className="font-semibold text-white mb-4">Publication</h4>
+              <ul className="space-y-2 text-xs text-slate-500">
+                <li className="text-slate-400 font-medium">IJRTI | ISSN: 2456-3315</li>
+                <li>Ananda D, Madhumitha S,</li>
+                <li>Kamalika M</li>
+                <li className="pt-1">Guide: Dr. P. Vinothiyalakshmi</li>
               </ul>
             </div>
           </div>
           <div className="mt-12 pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-slate-500">© 2026 FinSight. Educational platform.</p>
-            <p className="text-sm text-slate-500">⚠️ Not investment advice. Consult a qualified financial advisor.</p>
+            <p className="text-sm text-slate-500">© 2026 FinSight · Final Year Project · SVCE Chennai</p>
+            <p className="text-sm text-slate-500">⚠ Not investment advice · Educational & research use only</p>
           </div>
         </div>
       </footer>
@@ -429,78 +683,29 @@ export default function HomePage() {
   );
 }
 
-// Sub-components
-
-function AnimatedScoreBar({ label, score, color, delay }: { label: string; score: number; color: "violet" | "blue" | "emerald"; delay: number }) {
-  const bars = {
-    violet: "bg-gradient-to-r from-violet-500 to-purple-500",
-    blue: "bg-gradient-to-r from-blue-500 to-sky-500",
-    emerald: "bg-gradient-to-r from-emerald-500 to-teal-500",
-  };
-  const texts = { violet: "text-violet-600", blue: "text-blue-600", emerald: "text-emerald-600" };
+function ResultBar({ label, value, color }: { label: string; value: number; color: "violet" | "emerald" | "blue" }) {
+  const barColor = { violet: "bg-violet-500", emerald: "bg-emerald-500", blue: "bg-blue-500" }[color];
+  const textColor = { violet: "text-violet-600", emerald: "text-emerald-600", blue: "text-blue-600" }[color];
   return (
     <div>
-      <div className="flex justify-between items-center mb-1.5">
-        <span className="text-sm font-medium text-slate-700">{label}</span>
-        <span className={`text-sm font-bold ${texts[color]}`}>{score}</span>
+      <div className="flex justify-between text-sm mb-1.5">
+        <span className="text-slate-700 font-medium">{label}</span>
+        <span className={clsx("font-black", textColor)}>{value}%</span>
       </div>
-      <div className="h-2.5 rounded-full bg-slate-100 overflow-hidden">
-        <motion.div
-          initial={{ width: 0 }}
-          animate={{ width: `${score}%` }}
-          transition={{ duration: 1, delay }}
-          className={`h-full rounded-full ${bars[color]}`}
-        />
+      <div className="h-2.5 bg-slate-200 rounded-full overflow-hidden">
+        <motion.div className={clsx("h-full rounded-full", barColor)}
+          initial={{ width: 0 }} whileInView={{ width: `${value}%` }}
+          viewport={{ once: true }} transition={{ duration: 1, ease: "easeOut" }} />
       </div>
     </div>
-  );
-}
-
-function ValueCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-      className="rounded-2xl bg-white border border-slate-200 p-8 text-center hover:shadow-xl hover:border-violet-200 hover:-translate-y-1 transition-all"
-    >
-      <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100 text-violet-600 mb-6">{icon}</div>
-      <h3 className="text-xl font-bold text-slate-900 mb-3">{title}</h3>
-      <p className="text-slate-600">{description}</p>
-    </motion.div>
-  );
-}
-
-function FeatureCard({ icon, title, description }: { icon: React.ReactNode; title: string; description: string }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-      className="rounded-2xl bg-slate-800 border border-slate-700 p-6 hover:border-violet-500/50 transition-all group"
-    >
-      <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-violet-600/20 text-violet-400 mb-4 group-hover:bg-violet-600/30 transition-colors">
-        {icon}
-      </div>
-      <h3 className="text-lg font-bold text-white mb-2">{title}</h3>
-      <p className="text-slate-400 text-sm">{description}</p>
-    </motion.div>
-  );
-}
-
-function StatItem({ value, label, sublabel }: { value: string; label: string; sublabel: string }) {
-  return (
-    <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-      <p className="text-5xl md:text-6xl font-black text-white mb-2">{value}</p>
-      <p className="text-lg font-semibold text-slate-300">{label}</p>
-      <p className="text-sm text-slate-500">{sublabel}</p>
-    </motion.div>
   );
 }
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
-      className="rounded-2xl border border-slate-200 bg-white overflow-hidden hover:border-violet-200 transition-colors"
-    >
+    <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
+      className="rounded-2xl border border-slate-200 bg-white overflow-hidden hover:border-violet-200 transition-colors">
       <button onClick={() => setOpen(!open)} className="w-full flex items-center justify-between p-6 text-left">
         <span className="font-bold text-slate-900">{question}</span>
         <div className={clsx("flex h-8 w-8 shrink-0 items-center justify-center rounded-full transition-colors",
@@ -510,11 +715,9 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
       </button>
       <AnimatePresence>
         {open && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden"
-          >
-            <div className="px-6 pb-6"><p className="text-slate-600">{answer}</p></div>
+          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }} className="overflow-hidden">
+            <div className="px-6 pb-6"><p className="text-slate-600 leading-relaxed">{answer}</p></div>
           </motion.div>
         )}
       </AnimatePresence>
