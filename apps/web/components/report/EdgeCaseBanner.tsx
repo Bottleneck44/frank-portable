@@ -13,14 +13,14 @@ export function EdgeCaseBanner({ flags }: { flags: EdgeCaseFlag[] }) {
           key={f.type}
           initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }}
           transition={{ delay: i * 0.08 }}
-          className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3"
+          className="flex items-start gap-3 bg-amber-500/8 border border-amber-500/20 rounded-xl px-4 py-3"
         >
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-100">
-            <AlertTriangle className="h-4 w-4 text-amber-600" />
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-amber-500/15">
+            <AlertTriangle className="h-4 w-4 text-amber-400" />
           </div>
           <div>
-            <p className="font-semibold text-amber-800 text-sm">{f.description}</p>
-            <p className="text-xs text-amber-600 mt-0.5 leading-relaxed">{f.mitigationApplied}</p>
+            <p className="font-semibold text-amber-300 text-sm">{f.description}</p>
+            <p className="text-xs text-amber-500/70 mt-0.5 leading-relaxed">{f.mitigationApplied}</p>
           </div>
         </motion.div>
       ))}

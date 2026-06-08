@@ -21,5 +21,5 @@ echo  - Web app:  http://localhost:3000
 echo  - ML API:   http://localhost:8000
 echo.
 
-start "FinSight ML API" cmd /k "cd apps\api && venv\Scripts\activate.bat && uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload"
+start "FinSight ML API" cmd /k "cd /d "%~dp0apps" && ..\apps\api\venv\Scripts\activate.bat && uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload"
 cd apps\web && npm run dev

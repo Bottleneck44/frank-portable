@@ -9,8 +9,5 @@ venv/
 dist/
 .DS_Store
 Thumbs.db
-apps/api/models/trained/
-apps/api/models/scalers/
-*.pkl
-*.h5
-*.joblib
+# models are committed so the backend works on Render
+# *.pkl *.h5 *.joblib — intentionally NOT ignored

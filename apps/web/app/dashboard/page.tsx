@@ -5,8 +5,8 @@ import {
   ScatterChart, Scatter, XAxis, YAxis, CartesianGrid,
   Tooltip, ResponsiveContainer, ReferenceLine,
 } from "recharts";
-import { Trash2, BarChart2, TrendingUp, Activity, ArrowRight, Search } from "lucide-react";
-import { motion, useInView } from "framer-motion";
+import { Trash2, BarChart2, TrendingUp, Activity, ArrowRight, Search, GitCompare, X, CheckCircle2 } from "lucide-react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 import clsx from "clsx";
 
@@ -40,9 +40,91 @@ function CountStat({ target, suffix = "" }: { target: number; suffix?: string })
   return <span ref={ref}>{val}{suffix}</span>;
 }
 
+function scoreColor(s: number) {
+  if (s >= 70) return "text-emerald-400";
+  if (s >= 45) return "text-amber-400";
+  return "text-red-400";
+}
+
+function ComparePanel({ tickers, onClose, router }: {
+  tickers: [string, string];
+  onClose: () => void;
+  router: ReturnType<typeof useRouter>;
+}) {
+  const { history } = useAnalysisStore();
+  const a = history.find(h => h.ticker === tickers[0])?.result;
+  const b = history.find(h => h.ticker === tickers[1])?.result;
+  if (!a || !b) return null;
+
+  const rows = [
+    { label: "Composite",    va: Math.round(a.compositeScore),    vb: Math.round(b.compositeScore) },
+    { label: "Fundamental",  va: Math.round(a.fundamentalScore),  vb: Math.round(b.fundamentalScore) },
+    { label: "Technical",    va: Math.round(a.technicalScore),    vb: Math.round(b.technicalScore) },
+    { label: "Confidence",   va: Math.round(a.blendedConfidence * 100), vb: Math.round(b.blendedConfidence * 100) },
+    { label: "Red Flags",    va: a.redFlags.length, vb: b.redFlags.length, lower: true },
+  ];
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 8 }}
+      className="mb-12 bg-slate-900 border border-violet-500/20 rounded-2xl overflow-hidden shadow-2xl shadow-violet-500/10">
+      <div className="flex items-center gap-3 px-6 py-4 border-b border-white/5">
+        <GitCompare className="h-4 w-4 text-violet-400" />
+        <p className="text-sm font-bold text-white flex-1">Side-by-side comparison</p>
+        <button onClick={onClose} className="h-7 w-7 flex items-center justify-center rounded-full bg-white/5 hover:bg-white/10 text-slate-500 hover:text-white transition-colors">
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+      <div className="grid grid-cols-3 divide-x divide-white/5">
+        {/* Left */}
+        <button onClick={() => router.push(`/report/${encodeURIComponent(tickers[0])}`)}
+          className="p-6 text-center hover:bg-white/3 transition-colors group">
+          <p className="font-mono text-xs text-violet-400 mb-1">{tickers[0]}</p>
+          <p className="text-sm font-bold text-white">{a.companyName}</p>
+          <p className={clsx("text-4xl font-black tabular-nums mt-3", scoreColor(a.compositeScore))}>{Math.round(a.compositeScore)}</p>
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1 block">{a.verdict}</span>
+          <span className="text-xs text-violet-500 group-hover:text-violet-300 transition-colors mt-3 inline-flex items-center gap-1">View report <ArrowRight className="h-3 w-3" /></span>
+        </button>
+        {/* Metrics */}
+        <div className="p-6 space-y-3">
+          {rows.map(({ label, va, vb, lower }) => {
+            const aWins = lower ? va <= vb : va >= vb;
+            return (
+              <div key={label} className="flex items-center justify-between text-xs">
+                <span className="text-slate-600 w-20">{label}</span>
+                <span className={clsx("font-black tabular-nums w-8 text-center", aWins ? scoreColor(70) : "text-slate-500")}>{va}</span>
+                <span className="text-slate-700 text-[10px]">vs</span>
+                <span className={clsx("font-black tabular-nums w-8 text-center", !aWins ? scoreColor(70) : "text-slate-500")}>{vb}</span>
+              </div>
+            );
+          })}
+        </div>
+        {/* Right */}
+        <button onClick={() => router.push(`/report/${encodeURIComponent(tickers[1])}`)}
+          className="p-6 text-center hover:bg-white/3 transition-colors group">
+          <p className="font-mono text-xs text-violet-400 mb-1">{tickers[1]}</p>
+          <p className="text-sm font-bold text-white">{b.companyName}</p>
+          <p className={clsx("text-4xl font-black tabular-nums mt-3", scoreColor(b.compositeScore))}>{Math.round(b.compositeScore)}</p>
+          <span className="text-[10px] font-black uppercase tracking-widest text-slate-500 mt-1 block">{b.verdict}</span>
+          <span className="text-xs text-violet-500 group-hover:text-violet-300 transition-colors mt-3 inline-flex items-center gap-1">View report <ArrowRight className="h-3 w-3" /></span>
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function DashboardPage() {
   const router = useRouter();
   const { history, clearHistory } = useAnalysisStore();
+  const [compareMode, setCompareMode] = useState(false);
+  const [selected, setSelected] = useState<string[]>([]);
+
+  const toggleSelect = (ticker: string) => {
+    setSelected(prev =>
+      prev.includes(ticker)
+        ? prev.filter(t => t !== ticker)
+        : prev.length < 2 ? [...prev, ticker] : [prev[1], ticker]
+    );
+  };
 
   const avgComposite = history.length
     ? Math.round(history.reduce((s, h) => s + h.result.compositeScore, 0) / history.length)
@@ -83,11 +165,22 @@ export default function DashboardPage() {
                     <span className="text-slate-500 font-light">this session.</span></>
               }
             </motion.h1>
-            <motion.div variants={fadeUp} className="flex gap-3 shrink-0">
+            <motion.div variants={fadeUp} className="flex gap-3 shrink-0 flex-wrap">
               {history.length > 0 && (
                 <button onClick={clearHistory}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20 text-sm font-semibold transition-all">
                   <Trash2 className="h-3.5 w-3.5" /> Clear
+                </button>
+              )}
+              {history.length >= 2 && (
+                <button onClick={() => { setCompareMode(!compareMode); setSelected([]); }}
+                  className={clsx(
+                    "inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-all border",
+                    compareMode
+                      ? "bg-violet-600 text-white border-violet-600 shadow-lg shadow-violet-500/20"
+                      : "bg-white/5 text-slate-400 border-white/8 hover:text-white hover:border-violet-500/30"
+                  )}>
+                  <GitCompare className="h-3.5 w-3.5" /> {compareMode ? "Cancel" : "Compare"}
                 </button>
               )}
               <button onClick={() => router.push("/analyze")}
@@ -158,7 +251,7 @@ export default function DashboardPage() {
                   { label: "Healthy verdicts", value: healthyCount, suffix: "", color: "text-blue-400" },
                   { label: "High risk flags", value: highRiskCount, suffix: "", color: "text-red-400" },
                 ].map((s) => (
-                  <div key={s.label} className="bg-slate-950 p-8 md:p-10 flex flex-col gap-3">
+                  <div key={s.label} className="glow-card bg-slate-950 p-8 md:p-10 flex flex-col gap-3">
                     <p className={clsx("text-4xl md:text-5xl font-black tabular-nums tracking-tighter", s.color)}>
                       <CountStat target={s.value} suffix={s.suffix} />
                     </p>
@@ -206,6 +299,25 @@ export default function DashboardPage() {
               </div>
             </motion.div>
 
+            {/* ── Compare panel ── */}
+            <AnimatePresence>
+              {compareMode && selected.length === 2 && (
+                <ComparePanel
+                  tickers={selected as [string, string]}
+                  onClose={() => { setCompareMode(false); setSelected([]); }}
+                  router={router}
+                />
+              )}
+            </AnimatePresence>
+
+            {compareMode && selected.length < 2 && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+                className="mb-8 flex items-center gap-3 px-5 py-3.5 rounded-xl bg-violet-500/8 border border-violet-500/20 text-sm text-violet-300">
+                <GitCompare className="h-4 w-4 text-violet-400 shrink-0" />
+                Select {2 - selected.length} more stock{selected.length === 0 ? "s" : ""} to compare
+              </motion.div>
+            )}
+
             {/* ── History as editorial rows ── */}
             <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.1 }}>
               <motion.p variants={fadeUp} className="text-xs font-bold text-violet-400 uppercase tracking-[0.2em] mb-8">
@@ -219,11 +331,31 @@ export default function DashboardPage() {
                     : v === "High Risk"
                     ? "text-red-400 bg-red-500/10 border-red-500/20"
                     : "text-amber-400 bg-amber-500/10 border-amber-500/20";
+                  const isSelected = selected.includes(h.ticker);
                   return (
                     <motion.button key={`${h.ticker}-${h.analysisDate}`}
                       variants={fadeUp}
-                      onClick={() => router.push(`/report/${encodeURIComponent(h.ticker)}`)}
-                      className="group w-full flex items-center gap-6 md:gap-10 py-6 border-t border-white/5 hover:border-violet-500/20 transition-colors duration-200 text-left">
+                      whileHover={{ x: compareMode ? 0 : 3 }}
+                      whileTap={{ scale: 0.99 }}
+                      onClick={() => compareMode
+                        ? toggleSelect(h.ticker)
+                        : router.push(`/report/${encodeURIComponent(h.ticker)}`)
+                      }
+                      className={clsx(
+                        "group w-full flex items-center gap-6 md:gap-10 py-6 border-t transition-all duration-200 text-left",
+                        isSelected
+                          ? "border-violet-500/40 bg-violet-500/5"
+                          : "border-white/5 hover:border-violet-500/20"
+                      )}>
+                      {/* compare checkbox */}
+                      {compareMode && (
+                        <div className={clsx(
+                          "h-5 w-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-all",
+                          isSelected ? "border-violet-500 bg-violet-500" : "border-white/20"
+                        )}>
+                          {isSelected && <CheckCircle2 className="h-3.5 w-3.5 text-white" />}
+                        </div>
+                      )}
                       {/* index */}
                       <span className="text-xs font-black text-slate-800 w-8 shrink-0 group-hover:text-violet-500 transition-colors tabular-nums">
                         {String(i + 1).padStart(2, "0")}
@@ -249,7 +381,7 @@ export default function DashboardPage() {
                       <span className={clsx("text-[10px] font-black px-2.5 py-1 rounded-full border shrink-0 whitespace-nowrap", vc)}>
                         {v}
                       </span>
-                      <ArrowRight className="h-3.5 w-3.5 text-slate-800 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                      {!compareMode && <ArrowRight className="h-3.5 w-3.5 text-slate-800 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all shrink-0" />}
                     </motion.button>
                   );
                 })}

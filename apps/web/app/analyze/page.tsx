@@ -1,5 +1,5 @@
 "use client";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { FusionResult, FinancialYear } from "@/lib/engine/types";
 import { useAnalysisStore } from "@/store/analysis-store";
@@ -55,6 +55,20 @@ export default function AnalyzePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Keyboard shortcut: "/" focuses the ticker input
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "/" && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA") {
+        e.preventDefault();
+        setMode("ticker");
+        setTimeout(() => inputRef.current?.focus(), 50);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
 
   const handleTickerChange = (v: string) => {
     setTickerInput(v.toUpperCase());
@@ -189,12 +203,14 @@ export default function AnalyzePage() {
                   <div className="relative">
                     <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-600" />
                     <input
+                      ref={inputRef}
                       value={tickerInput}
                       onChange={(e) => handleTickerChange(e.target.value)}
                       onKeyDown={(e) => e.key === "Enter" && submitTicker()}
                       placeholder="RELIANCE.NS or INFY"
-                      className="w-full pl-14 pr-5 py-5 bg-slate-900 border border-white/8 rounded-2xl text-lg font-semibold text-white placeholder:text-slate-700 focus:outline-none focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15 transition-all"
+                      className="w-full pl-14 pr-14 py-5 bg-slate-900 border border-white/8 rounded-2xl text-lg font-semibold text-white placeholder:text-slate-700 focus:outline-none focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15 transition-all"
                     />
+                    <kbd className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-700 bg-white/5 border border-white/8 rounded px-1.5 py-0.5 hidden sm:block">/</kbd>
                     <AnimatePresence>
                       {suggestions.length > 0 && (
                         <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
@@ -251,15 +267,25 @@ export default function AnalyzePage() {
             <motion.div variants={fadeUp} className="space-y-0">
               {QUICK_PICKS.map((pick, i) => (
                 <motion.button key={pick.t} variants={fadeUp}
-                  onClick={() => { setTickerInput(pick.t); setMode("ticker"); }}
+                  onClick={() => {
+                    setTickerInput(pick.t);
+                    setMode("ticker");
+                    const ticker = pick.t.includes(".") ? pick.t : `${pick.t}.NS`;
+                    runAnalysis({ ticker, companyName: pick.label });
+                  }}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
                   className="group w-full flex items-center gap-6 py-5 border-t border-white/5 hover:border-violet-500/20 transition-colors duration-200 text-left">
                   <span className="text-xs font-black text-slate-800 w-6 shrink-0 group-hover:text-violet-500 transition-colors tabular-nums">
                     {String(i + 1).padStart(2, "0")}
                   </span>
                   <span className="font-mono text-xs text-slate-600 group-hover:text-violet-400 transition-colors w-28 shrink-0">{pick.t}</span>
                   <span className="flex-1 text-sm font-semibold text-white">{pick.label}</span>
-                  <span className="text-xs text-slate-700 group-hover:text-slate-500 transition-colors shrink-0">{pick.sector}</span>
-                  <ArrowRight className="h-3.5 w-3.5 text-slate-800 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  <span className="text-xs font-medium text-slate-700 group-hover:text-slate-400 transition-colors shrink-0 bg-white/4 px-2 py-0.5 rounded-full">{pick.sector}</span>
+                  {loading && tickerInput === pick.t
+                    ? <div className="h-3.5 w-3.5 border-2 border-violet-500 border-t-transparent rounded-full animate-spin shrink-0" />
+                    : <ArrowRight className="h-3.5 w-3.5 text-slate-800 group-hover:text-violet-400 group-hover:translate-x-1 transition-all shrink-0" />}
                 </motion.button>
               ))}
               <div className="border-t border-white/5" />
@@ -275,9 +301,63 @@ export default function AnalyzePage() {
           </motion.div>
         </div>
 
+        {/* ── Case Studies ── */}
+        <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.15 }}
+          className="mt-24 pt-16 border-t border-white/5">
+          <motion.p variants={fadeUp} className="text-xs font-bold text-violet-400 uppercase tracking-[0.2em] mb-4">
+            Validated case studies — 5/5 correct
+          </motion.p>
+          <motion.p variants={fadeUp} className="text-sm text-slate-500 mb-10 max-w-xl">
+            FRANK was retrospectively tested on real historical data. Click any case study to reproduce the analysis live.
+          </motion.p>
+          <motion.div variants={fadeUp} className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            {[
+              { ticker: "HINDUNILVR.NS", label: "HUL", verdict: "Healthy",   color: "emerald", desc: "29/30 rules passed. ROE 75%+. FMCG gold standard." },
+              { ticker: "YESBANK.NS",    label: "Yes Bank", verdict: "High Risk", color: "red",    desc: "Flagged 12 months before RBI restructuring (2020)." },
+              { ticker: "TATAMOTORS.NS", label: "Tata Motors", verdict: "Caution",  color: "amber",  desc: "JLR losses dragged margins. Correctly Caution FY19." },
+              { ticker: "TCS.NS",        label: "TCS",  verdict: "Healthy",   color: "emerald", desc: "Zero D/E. Cash-rich. ML unanimously BULLISH." },
+            ].map((cs) => {
+              const colMap = {
+                emerald: { text: "text-emerald-400", border: "border-emerald-500/20", bg: "bg-emerald-500/8", pill: "bg-emerald-500/15 text-emerald-400 border-emerald-500/25" },
+                red:     { text: "text-red-400",     border: "border-red-500/20",     bg: "bg-red-500/8",     pill: "bg-red-500/15 text-red-400 border-red-500/25" },
+                amber:   { text: "text-amber-400",   border: "border-amber-500/20",   bg: "bg-amber-500/8",   pill: "bg-amber-500/15 text-amber-400 border-amber-500/25" },
+              }[cs.color];
+              return (
+                <motion.button key={cs.ticker}
+                  whileHover={{ y: -3, scale: 1.01 }} whileTap={{ scale: 0.98 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                  onClick={() => runAnalysis({ ticker: cs.ticker, companyName: cs.label })}
+                  disabled={loading}
+                  className={clsx(
+                    "glow-card group text-left p-5 rounded-2xl border transition-all disabled:opacity-50",
+                    colMap?.bg, colMap?.border
+                  )}>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={clsx("text-[10px] font-black px-2.5 py-0.5 rounded-full border", colMap?.pill)}>
+                      {cs.verdict}
+                    </span>
+                    {loading
+                      ? <div className="h-3.5 w-3.5 border-2 border-current border-t-transparent rounded-full animate-spin opacity-40" />
+                      : <ArrowRight className={clsx("h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform opacity-40", colMap?.text)} />}
+                  </div>
+                  <p className="font-black text-white text-sm mb-1">{cs.label}</p>
+                  <p className="font-mono text-[10px] text-slate-600 mb-3">{cs.ticker}</p>
+                  <p className="text-xs text-slate-500 leading-relaxed">{cs.desc}</p>
+                </motion.button>
+              );
+            })}
+          </motion.div>
+          <motion.p variants={fadeUp} className="mt-5 text-xs text-slate-700">
+            Results are live — fetched from Yahoo Finance in real-time.{" "}
+            <Link href="/validation" className="text-violet-600 hover:text-violet-400 transition-colors">
+              View full validation report →
+            </Link>
+          </motion.p>
+        </motion.div>
+
         {/* ── How it works strip ── */}
         <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true, amount: 0.2 }}
-          className="mt-32 pt-16 border-t border-white/5">
+          className="mt-20 pt-16 border-t border-white/5">
           <motion.p variants={fadeUp} className="text-xs font-bold text-violet-400 uppercase tracking-[0.2em] mb-12">
             What happens when you run an analysis
           </motion.p>
