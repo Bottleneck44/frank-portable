@@ -76,6 +76,15 @@ export default function AnalyzePage() {
   };
 
   const runAnalysis = useCallback(async (body: object) => {
+    // For ticker-based analysis, navigate immediately so the report page
+    // owns the fetch and shows its loading animation from the first visit.
+    if ("ticker" in body && typeof (body as Record<string, unknown>).ticker === "string") {
+      const t = (body as Record<string, unknown>).ticker as string;
+      setCurrentResult(null); // clear so report page always shows loading
+      router.push(`/report/${encodeURIComponent(t)}`);
+      return;
+    }
+    // JSON manual upload: fetch here first (we need the result to know the ticker).
     setLoading(true); setError(null);
     try {
       const res = await fetch("/api/analyze", {
