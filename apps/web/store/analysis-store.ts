@@ -17,6 +17,7 @@ interface AnalysisStore {
   history: AnalysisEntry[];
   currentResult: FusionResult | null;
   setCurrentResult: (r: FusionResult) => void;
+  clearCurrentResult: () => void;
   addToHistory: (r: FusionResult) => void;
   clearHistory: () => void;
 }
@@ -27,6 +28,7 @@ export const useAnalysisStore = create<AnalysisStore>()(
       history: [],
       currentResult: null,
       setCurrentResult: (r) => set({ currentResult: r }),
+      clearCurrentResult: () => set({ currentResult: null }),
       addToHistory: (r) =>
         set((state) => ({
           history: [

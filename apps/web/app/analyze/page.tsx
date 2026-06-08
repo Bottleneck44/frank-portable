@@ -48,7 +48,7 @@ const QUICK_PICKS = [
 
 export default function AnalyzePage() {
   const router = useRouter();
-  const { setCurrentResult, addToHistory } = useAnalysisStore();
+  const { setCurrentResult, clearCurrentResult, addToHistory } = useAnalysisStore();
   const [mode, setMode] = useState<Mode>("ticker");
   const [tickerInput, setTickerInput] = useState("");
   const [jsonInput, setJsonInput] = useState("");
@@ -80,7 +80,7 @@ export default function AnalyzePage() {
     // owns the fetch and shows its loading animation from the first visit.
     if ("ticker" in body && typeof (body as Record<string, unknown>).ticker === "string") {
       const t = (body as Record<string, unknown>).ticker as string;
-      setCurrentResult(null); // clear so report page always shows loading
+      clearCurrentResult(); // clear so report page always shows loading
       router.push(`/report/${encodeURIComponent(t)}`);
       return;
     }
