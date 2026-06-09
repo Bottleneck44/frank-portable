@@ -11,7 +11,6 @@ import {
   Search, Menu, X, ChevronDown, FileText, GraduationCap,
   Activity, FlaskConical, Zap, Layers, Terminal,
 } from "lucide-react";
-import Image from "next/image";
 import clsx from "clsx";
 
 /* ─── Constants ─── */
@@ -333,10 +332,14 @@ export default function HomePage() {
       >
         <div className="mx-auto max-w-6xl px-6">
           <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2 group">
-              <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
-                <Image src="/logo.png" alt="FRANK" width={110} height={48} className="object-contain" priority />
+            <Link href="/" className="flex items-center gap-2.5 group">
+              <motion.div
+                whileHover={{ rotate: 6, scale: 1.05 }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 shadow-md shadow-violet-500/30"
+              >
+                <BarChart2 className="h-4 w-4 text-white" />
               </motion.div>
+              <span className="text-lg font-black text-white tracking-tight">FRANK</span>
             </Link>
             <div className="hidden md:flex items-center gap-8">
               {[{ label: "Problem", id: "problem" }, { label: "Approach", id: "approach" },
@@ -891,8 +894,11 @@ export default function HomePage() {
       <footer className="bg-slate-950 border-t border-white/5">
         <div className="mx-auto max-w-6xl px-6 py-16">
           <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-10">
-            <Link href="/">
-              <Image src="/logo.png" alt="FRANK" width={100} height={44} className="object-contain opacity-80 hover:opacity-100 transition-opacity" />
+            <Link href="/" className="flex items-center gap-2.5 opacity-80 hover:opacity-100 transition-opacity">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600">
+                <BarChart2 className="h-3.5 w-3.5 text-white" />
+              </div>
+              <span className="text-base font-black text-white tracking-tight">FRANK</span>
             </Link>
             <div className="flex flex-wrap gap-6 text-sm text-slate-500">
               <Link href="/analyze" className="hover:text-white transition-colors">Analyze</Link>

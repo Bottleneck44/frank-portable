@@ -3,9 +3,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Search, LayoutDashboard, BookOpen, FlaskConical, Maximize, Minimize } from "lucide-react";
+import { Search, LayoutDashboard, BookOpen, FlaskConical, BarChart2, Maximize, Minimize } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import Image from "next/image";
 import clsx from "clsx";
 
 const NAV_LINKS = [
@@ -44,10 +43,14 @@ export function AppNav() {
       )}>
         <div className="mx-auto max-w-6xl px-6">
           <div className="flex h-14 items-center justify-between">
-            <Link href="/" className="flex items-center gap-2">
-              <motion.div whileHover={{ scale: 1.05 }} transition={{ type: "spring", stiffness: 400, damping: 25 }}>
-                <Image src="/logo.png" alt="FRANK" width={110} height={48} className="object-contain" priority />
+            <Link href="/" className="flex items-center gap-2.5">
+              <motion.div
+                whileHover={{ rotate: 6, scale: 1.05 }}
+                className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-purple-600 shadow-md shadow-violet-500/30"
+              >
+                <BarChart2 className="h-4 w-4 text-white" />
               </motion.div>
+              <span className="text-lg font-black text-white tracking-tight">FRANK</span>
               {demoMode && (
                 <motion.span initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }}
                   className="text-[9px] font-black uppercase tracking-widest text-violet-400 bg-violet-500/15 border border-violet-500/30 px-2 py-0.5 rounded-full">
